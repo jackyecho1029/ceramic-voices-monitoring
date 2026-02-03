@@ -6,6 +6,9 @@ on:
     - cron: '0 8 * * *'
   workflow_dispatch:  # 支持手动触发
 
+env:
+  PYTHON_VERSION: '3.10'
+
 jobs:
   data-collection:
     name: 数据搜集
@@ -17,7 +20,7 @@ jobs:
       - name: 设置 Python 环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: 安装依赖
         run: |
@@ -26,6 +29,10 @@ jobs:
       - name: 创建输出目录
         run: |
           mkdir -p scrapers/output
+
+      - name: 运行 Instagram 竞品数据搜集
+        run: |
+          python scrapers/instagram.py
 
       - name: 运行新闻数据搜集
         run: |
@@ -53,7 +60,7 @@ jobs:
       - name: 设置 Python 环境
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: 安装依赖
         run: |
@@ -92,23 +99,60 @@ jobs:
         with:
           script: |
             const today = new Date().toISOString().split('T')[0];
+            const reportUrl = 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+
             const title = `📊 每日数据报告 - ${{today }}`;
 
             const body = `## 数据搜集摘要
-            - [ ] Instagram 竞品数据已更新
-            - [ ] 行业新闻已搜集
-            - [ ] 趋势分析已完成
 
-            ## 需要关注
-            ...
+            ✅ **数据搜集完成**
+            - [x] Instagram 竞品数据已更新
+            - [x] 行业新闻已搜集
+            - [x] 趋势分析已完成
+
+            ## 查看详细报告
+
+            📊 [GitHub Actions Artifacts](${{reportUrl }}/artifacts)
+            🔍 [仓库页面](https://github.com/${{ github.repository }})
 
             ## 数据文件
-            请查看 Artifacts 获取详细数据。`;
+
+            ### Instagram 竞品数据
+            - @heathceramics (现代建筑陶瓷)
+            - @keramicstudio (温暖手作陶瓷)
+            - @juliettemcinty (自然有机陶瓷)
+            - @thecupcollection (杯具专门店)
+
+            ### 新闻数据
+            - Ceramic Arts Network
+            - Ceramic Monthly
+            - Etsy Seller Handbook
+
+            ### 趋势数据
+            - handmade ceramics
+            - pottery art
+            - tea ceremony
+            - ceramic home decor
+
+            ## 需要关注
+
+            - 新发现的竞品活动
+            - 热门内容的发布频率
+            - 趋势关键词的变化
+
+            ---
+
+            *本报告由 GitHub Actions 自动生成*
+            *生成时间: ${{today }}*
+            *运行ID: ${{ github.run_id }}*
+            `;
 
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: title,
               body: body,
-              labels: ['daily-report']
+              labels: ['daily-report', 'automated']
+            }).catch(error => {
+              console.error('创建 Issue 失败:', error);
             });
