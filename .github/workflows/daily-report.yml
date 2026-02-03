@@ -1,0 +1,114 @@
+name: 每日数据搜集报告
+
+on:
+  schedule:
+    # 每天早上 8:00 (UTC) 运行，相当于北京时间 16:00
+    - cron: '0 8 * * *'
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  data-collection:
+    name: 数据搜集
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 安装依赖
+        run: |
+          pip install requests beautifulsoup4 pandas numpy
+
+      - name: 创建输出目录
+        run: |
+          mkdir -p scrapers/output
+
+      - name: 运行新闻数据搜集
+        run: |
+          python scrapers/news.py
+
+      - name: 运行趋势数据搜集
+        run: |
+          python scrapers/trends.py
+
+      - name: 上传搜集的数据
+        uses: actions/upload-artifact@v3
+        with:
+          name: daily-data-${{ github.event_name }}
+          path: scrapers/output/
+          retention-days: 30
+
+  analysis:
+    name: 数据分析
+    needs: data-collection
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python 环境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 安装依赖
+        run: |
+          pip install requests beautifulsoup4 pandas numpy
+
+      - name: 下载搜集的数据
+        uses: actions/download-artifact@v3
+        with:
+          name: daily-data-${{ github.event_name }}
+
+      - name: 运行数据分析
+        run: |
+          python analysis/daily_analysis.py
+
+      - name: 生成报告
+        run: |
+          python reports/generate_report.py
+
+      - name: 上传报告
+        uses: actions/upload-artifact@v3
+        with:
+          name: daily-report-${{ github.event_name }}
+          path: reports/output/
+          retention-days: 90
+
+  notification:
+    name: 发送通知
+    needs: analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 创建 GitHub Issue 记录
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const today = new Date().toISOString().split('T')[0];
+            const title = `📊 每日数据报告 - ${{today }}`;
+
+            const body = `## 数据搜集摘要
+            - [ ] Instagram 竞品数据已更新
+            - [ ] 行业新闻已搜集
+            - [ ] 趋势分析已完成
+
+            ## 需要关注
+            ...
+
+            ## 数据文件
+            请查看 Artifacts 获取详细数据。`;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['daily-report']
+            });
