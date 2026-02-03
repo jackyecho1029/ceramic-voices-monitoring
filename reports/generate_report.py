@@ -8,9 +8,9 @@ import json
 import os
 from datetime import datetime
 
-# 输入输出目录
-DATA_DIR = "../analysis"
-OUTPUT_DIR = "output"
+# 输入输出目录（使用绝对路径）
+DATA_DIR = os.path.abspath("../analysis")
+OUTPUT_DIR = os.path.abspath("output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 REPORT_TEMPLATE = """# 📊 每日数据搜集报告

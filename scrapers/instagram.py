@@ -10,8 +10,8 @@ from datetime import datetime
 import os
 from bs4 import BeautifulSoup
 
-# 输出目录
-OUTPUT_DIR = "output"
+# 输出目录（使用绝对路径）
+OUTPUT_DIR = os.path.abspath("output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # 竞品账号列表

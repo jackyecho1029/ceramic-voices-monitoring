@@ -9,8 +9,8 @@ import json
 from datetime import datetime
 import os
 
-# 输出目录
-OUTPUT_DIR = "output"
+# 输出目录（使用绝对路径）
+OUTPUT_DIR = os.path.abspath("output")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # 陶瓷相关的搜索关键词

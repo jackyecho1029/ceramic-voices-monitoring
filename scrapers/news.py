@@ -14,22 +14,25 @@ import os
 OUTPUT_DIR = "output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-# 新闻源列表
+# 新闻源列表（使用稳定可靠的源）
 NEWS_SOURCES = [
     {
-        "name": "Ceramic Arts Network",
-        "url": "https://ceramicartsnetwork.org/news",
-        "selector": "article"
-    },
-    {
-        "name": "Ceramic Monthly",
-        "url": "https://ceramicmonthly.com",
-        "selector": ".news-item"
+        "name": "Etsy Blog",
+        "url": "https://blog.etsy.com",
+        "selector": "article",
+        "description": "Etsy 官方博客"
     },
     {
         "name": "Etsy Seller Handbook",
         "url": "https://www.etsy.com/blog/seller-news",
-        "selector": "article"
+        "selector": "article",
+        "description": "卖家手册和新闻"
+    },
+    {
+        "name": "Crafts Magazine",
+        "url": "https://craftsmag.com",
+        "selector": "article",
+        "description": "手工艺杂志"
     }
 ]
 
