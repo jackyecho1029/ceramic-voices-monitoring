@@ -2,9 +2,9 @@ name: 每日数据搜集报告
 
 on:
   schedule:
-    # 每天早上 8:00 (UTC) 运行，相当于北京时间 16:00
+    # 每天早上 8:00 (UTC) 运行
     - cron: '0 8 * * *'
-  workflow_dispatch:  # 支持手动触发
+  workflow_dispatch:
 
 env:
   PYTHON_VERSION: '3.10'
@@ -25,10 +25,6 @@ jobs:
       - name: 安装依赖
         run: |
           pip install requests beautifulsoup4 pandas numpy
-
-      - name: 创建输出目录
-        run: |
-          mkdir -p scrapers/output
 
       - name: 运行 Instagram 竞品数据搜集
         run: |
@@ -90,7 +86,8 @@ jobs:
     name: 发送通知
     needs: analysis
     runs-on: ubuntu-latest
-    steps:
+    if: success()
+      steps:
       - name: 检出代码
         uses: actions/checkout@v4
 
@@ -99,52 +96,47 @@ jobs:
         with:
           script: |
             const today = new Date().toISOString().split('T')[0];
-            const reportUrl = `https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const reportUrl = 'https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId;
 
-            const title = `📊 每日数据报告 - ${today}`;
+            const title = '📊 每日数据报告 - ' + today;
 
             const body = `## 数据搜集摘要
 
-            ✅ **数据搜集完成**
-            - [x] Instagram 竞品数据已更新
-            - [x] 行业新闻已搜集
-            - [x] 趋势分析已完成
+            ✅ 数据搜集完成
+            - Instagram 竞品数据已更新
+            - 行业新闻已搜集
+            - 趋势分析已完成
 
             ## 查看详细报告
+            📊 [GitHub Actions Artifacts](` + reportUrl + `/artifacts`)
+            🔍 [仓库页面](https://github.com/` + context.repo.owner + `/` + context.repo.repo + `)
 
-            📊 [GitHub Actions Artifacts](${reportUrl}/artifacts)
-            🔍 [仓库页面](https://github.com/${{ github.repository }})
-
-            ## 数据文件
-
-            ### Instagram 竞品数据
+            ## Instagram 竞品数据
             - @heathceramics (现代建筑陶瓷)
             - @keramicstudio (温暖手作陶瓷)
             - @juliettemcinty (自然有机陶瓷)
             - @thecupcollection (杯具专门店)
 
-            ### 新闻数据
-            - Ceramic Arts Network
-            - Ceramic Monthly
-            - Etsy Seller Handbook
+            ## 新闻数据
+            - Etsy Blog
+            - Crafts Magazine
 
-            ### 趋势数据
+            ## 趋势数据
             - handmade ceramics
             - pottery art
             - tea ceremony
             - ceramic home decor
+            - teaware
 
             ## 需要关注
-
             - 新发现的竞品活动
             - 热门内容的发布频率
             - 趋势关键词的变化
 
             ---
-
             *本报告由 GitHub Actions 自动生成*
-            *生成时间: ${today}*
-            *运行ID: ${{ github.run_id }}*
+            *生成时间：` + today + `*
+            *运行ID：` + context.runId + `*
             `;
 
             github.rest.issues.create({
