@@ -9,9 +9,9 @@ import os
 import pandas as pd
 from datetime import datetime
 
-# 输入输出目录（使用绝对路径）
-DATA_DIR = os.path.abspath("../scrapers/output")
-OUTPUT_DIR = "../reports/output"
+# 输入输出目录
+DATA_DIR = "scrapers/output"
+OUTPUT_DIR = "reports/output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def load_data():

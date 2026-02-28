@@ -139,7 +139,7 @@ jobs:
             *运行ID：${context.runId}*
             `;
 
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: title,
