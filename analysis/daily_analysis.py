@@ -11,7 +11,7 @@ from datetime import datetime
 
 # 输入输出目录
 DATA_DIR = "scrapers/output"
-OUTPUT_DIR = "reports/output"
+OUTPUT_DIR = "analysis/output"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def load_data():
