@@ -39,7 +39,7 @@ def load_data():
 def analyze_news(news_data):
     """分析新闻数据"""
     if not news_data:
-        return "暂无新闻数据"
+        return {"total": 0, "by_source": {}}
 
     # 统计每个来源的新闻数量
     sources = {}
@@ -55,7 +55,7 @@ def analyze_news(news_data):
 def analyze_trends(trends_data):
     """分析趋势数据"""
     if not trends_data:
-        return "暂无趋势数据"
+        return {"total": 0, "top_trends": []}
 
     # 找出趋势分数最高的关键词
     sorted_trends = sorted(trends_data, key=lambda x: x.get('trend_score', 0), reverse=True)
