@@ -9,6 +9,10 @@ on:
 env:
   PYTHON_VERSION: '3.10'
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   data-collection:
     name: 数据搜集
