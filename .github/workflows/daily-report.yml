@@ -96,9 +96,9 @@ jobs:
         with:
           script: |
             const today = new Date().toISOString().split('T')[0];
-            const reportUrl = 'https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId;
+            const reportUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
-            const title = '📊 每日数据报告 - ' + today;
+            const title = `📊 每日数据报告 - ${today}`;
 
             const body = `## 数据搜集摘要
 
@@ -108,8 +108,8 @@ jobs:
             - 趋势分析已完成
 
             ## 查看详细报告
-            📊 [GitHub Actions Artifacts](` + reportUrl + `/artifacts`)
-            🔍 [仓库页面](https://github.com/` + context.repo.owner + `/` + context.repo.repo + `)
+            📊 [GitHub Actions Artifacts](${reportUrl}/artifacts)
+            🔍 [仓库页面](https://github.com/${context.repo.owner}/${context.repo.repo})
 
             ## Instagram 竞品数据
             - @heathceramics (现代建筑陶瓷)
@@ -135,8 +135,8 @@ jobs:
 
             ---
             *本报告由 GitHub Actions 自动生成*
-            *生成时间：` + today + `*
-            *运行ID：` + context.runId + `*
+            *生成时间：${today}*
+            *运行ID：${context.runId}*
             `;
 
             github.rest.issues.create({
